@@ -1,0 +1,31 @@
+[project]
+name = "rag-agent"
+version = "0.1.0"
+description = "Bounded ReAct retrieval agent over a Python and RISC-V corpus (U0-HW-09)"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "chromadb>=1.4,<2",
+    "langchain-chroma>=1.1,<2",
+    "langchain-core>=1.0,<2",
+    "langchain-openai>=1.1,<2",
+    "langchain-text-splitters>=1.0,<2",
+    "langgraph>=1.1,<2",
+    "pdfplumber>=0.11,<0.12",
+    "pydantic>=2.6,<3",
+    "python-dotenv>=1.2,<2",
+]
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+markers = [
+    "whitebox: tests written after examining the implementation",
+    "live: talks to the real course services; skipped unless RUN_LIVE=1",
+]

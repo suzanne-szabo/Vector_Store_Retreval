@@ -1,0 +1,104 @@
+{
+  "created_at": "2026-10-27T05:06:56+00:00",
+  "sources": {
+    "riscv-psabi": {
+      "file": "riscv-elf-psabi-v1.0.pdf",
+      "sha256": "a8d06bdcaa82a6a4567a1904dc27ef1ca1043ebaa1f523558c927a9d72bc23d9",
+      "pages_total": 56,
+      "pages_kept": 53,
+      "chunks": 114,
+      "embedded_at": "2026-10-27T05:07:27+00:00",
+      "embed_seconds": 30.2
+    },
+    "winans-rvalp": {
+      "file": "winans-rvalp-v0.18.4.pdf",
+      "sha256": "2fe3d9b2ce0db9ed07106fc983e71db0b79391dc07dd041e3f9c16840de7fb5d",
+      "pages_total": 91,
+      "pages_kept": 91,
+      "chunks": 413,
+      "embedded_at": "2026-10-27T05:10:06+00:00",
+      "embed_seconds": 159.0
+    },
+    "riscv-asm-manual": {
+      "file": "riscv-asm-manual-v0.0.1.pdf",
+      "sha256": "2edf43ff39c0ca47cf63ec058927f4f21d9c82a1cf004d6507260996d2e3b97f",
+      "pages_total": 50,
+      "pages_kept": 50,
+      "chunks": 75,
+      "embedded_at": "2026-10-27T05:10:29+00:00",
+      "embed_seconds": 23.5
+    },
+    "heinold-python": {
+      "file": "A_Practical_Introduction_to_Python_Programming_Heinold.pdf",
+      "sha256": "14cae739c98f1819f2aed0ee8e4f4d82c04ef01ee2ddbd9ccda27cfbc2026c88",
+      "pages_total": 263,
+      "pages_kept": 247,
+      "chunks": 611,
+      "embedded_at": "2026-10-27T05:12:50+00:00",
+      "embed_seconds": 140.6
+    },
+    "dagstuhl-19281": {
+      "file": "dagrep_v009_i007_p001_19281.pdf",
+      "sha256": "30382d69e18701a3b3321f61493a3d681f538d20c98000260d214028ae49f111",
+      "pages_total": 24,
+      "pages_kept": 24,
+      "chunks": 94,
+      "embedded_at": "2026-10-27T05:13:06+00:00",
+      "embed_seconds": 16.7
+    },
+    "guo-2013": {
+      "file": "guo-2013-online-python-tutor.pdf",
+      "sha256": "5340f944fcdc84805cb27140220e60c13c9862a85ee2858bbde51e39a043d531",
+      "pages_total": 6,
+      "pages_kept": 6,
+      "chunks": 44,
+      "embedded_at": "2026-10-27T05:13:15+00:00",
+      "embed_seconds": 8.7
+    },
+    "riscv-isa-2025": {
+      "file": "riscv-unprivileged-isa-20250508.pdf",
+      "sha256": "cef2e63c08c6f82cf7acc9056a589954f5b1adf6f7dccaa38cd75278b093e984",
+      "pages_total": 727,
+      "pages_kept": 724,
+      "chunks": 1880,
+      "embedded_at": "2026-10-27T05:23:02+00:00",
+      "embed_seconds": 511.8
+    },
+    "riscv-isa-2019": {
+      "file": "riscv-spec-20191213.pdf",
+      "sha256": "f392624cc815cd3f259413cbd9ae2f38678ee930878855a0f4673019410d7554",
+      "pages_total": 238,
+      "pages_kept": 220,
+      "chunks": 705,
+      "embedded_at": "2026-10-27T05:25:47+00:00",
+      "embed_seconds": 164.4
+    },
+    "python-crash-course": {
+      "file": "pythoncrashcourse.pdf",
+      "sha256": "43a8339bdb697134cb78ec95163dd400307c1bb153b939d6794637ca5e669e64",
+      "pages_total": 562,
+      "pages_kept": 543,
+      "chunks": 1719,
+      "embedded_at": "2026-10-27T05:30:36+00:00",
+      "embed_seconds": 289.0
+    }
+  },
+  "embedding_model": "Qwen3-Embedding-8B",
+  "chunking": {
+    "chunk_size": 1000,
+    "chunk_overlap": 150
+  },
+  "extractor": "pdfplumber 0.11.10 (layout=True, x_tolerance=1)",
+  "cleaning": {
+    "version": "2026-10-26.2",
+    "edge_depth": 2,
+    "edge_repeat_pages": 5,
+    "min_page_chars": 40
+  },
+  "updated_at": "2026-10-27T05:30:36+00:00",
+  "collection": "python_riscv_corpus",
+  "distance": "cosine",
+  "embedding_dimension": 4096,
+  "record_count": 5655,
+  "index_version": "48c92aea33b03628"
+}

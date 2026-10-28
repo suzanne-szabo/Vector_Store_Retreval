@@ -1,0 +1,117 @@
+# Source registry for the Python and RISC-V corpus.
+#
+# Ingestion reads only the files listed here, from DOCUMENTS_DIR, and refuses
+# any file whose SHA-256 differs from the recorded value. The agent filters and
+# cites by `id`, never by filename. `role` is the source-role statement used in
+# the system prompt and the report.
+#
+# Retrieved and checked on 2026-10-25.
+
+[[source]]
+id = "riscv-isa-2025"
+file = "riscv-unprivileged-isa-20250508.pdf"
+title = "The RISC-V Instruction Set Manual, Volume I: Unprivileged Architecture (version 20250508)"
+subject = "riscv"
+version = "20250508"
+role = "Authoritative ISA specification; controls current instruction semantics."
+license = "CC BY 4.0"
+url = "https://github.com/riscv/riscv-isa-manual/releases/download/20250508/riscv-unprivileged-20250508.pdf"
+pages = 727
+sha256 = "cef2e63c08c6f82cf7acc9056a589954f5b1adf6f7dccaa38cd75278b093e984"
+
+[[source]]
+id = "riscv-isa-2019"
+file = "riscv-spec-20191213.pdf"
+title = "The RISC-V Instruction Set Manual, Volume I: Unprivileged ISA (document version 20191213)"
+subject = "riscv"
+version = "20191213"
+role = "Earlier ratified ISA specification; use for history or comparison, not as the current rule."
+license = "CC BY 4.0"
+url = "https://github.com/riscv/riscv-isa-manual/releases/download/Ratified-IMAFDQC/riscv-spec-20191213.pdf"
+pages = 238
+sha256 = "f392624cc815cd3f259413cbd9ae2f38678ee930878855a0f4673019410d7554"
+
+[[source]]
+id = "riscv-psabi"
+file = "riscv-elf-psabi-v1.0.pdf"
+title = "RISC-V ABIs Specification (version 1.0)"
+subject = "riscv"
+version = "1.0"
+role = "Official calling convention and ABI; defines register roles and which registers a function must preserve."
+license = "CC BY 4.0"
+url = "https://github.com/riscv-non-isa/riscv-elf-psabi-doc/releases/download/v1.0/riscv-abi.pdf"
+pages = 56
+sha256 = "a8d06bdcaa82a6a4567a1904dc27ef1ca1043ebaa1f523558c927a9d72bc23d9"
+
+[[source]]
+id = "winans-rvalp"
+file = "winans-rvalp-v0.18.4.pdf"
+title = "RISC-V Assembly Language Programming (John Winans, draft v0.18.4)"
+subject = "riscv"
+version = "0.18.4 (draft)"
+role = "Beginner tutorial, draft; explains and illustrates but does not override the specifications."
+license = "CC BY 4.0"
+url = "https://github.com/johnwinans/rvalp/releases/download/v0.18.4/rvalp.pdf"
+pages = 91
+sha256 = "2fe3d9b2ce0db9ed07106fc983e71db0b79391dc07dd041e3f9c16840de7fb5d"
+
+[[source]]
+id = "riscv-asm-manual"
+file = "riscv-asm-manual-v0.0.1.pdf"
+title = "RISC-V Assembly Programmer's Manual (version 0.0.1, draft)"
+subject = "riscv"
+version = "0.0.1 (draft)"
+role = "Practical reference for assembler directives and pseudoinstructions, draft; does not override the specifications."
+license = "CC BY 4.0"
+url = "https://github.com/riscv-non-isa/riscv-asm-manual/releases/download/v0.0.1/riscv-asm.pdf"
+pages = 50
+sha256 = "2edf43ff39c0ca47cf63ec058927f4f21d9c82a1cf004d6507260996d2e3b97f"
+
+[[source]]
+id = "heinold-python"
+file = "A_Practical_Introduction_to_Python_Programming_Heinold.pdf"
+title = "A Practical Introduction to Python Programming (Brian Heinold)"
+subject = "python"
+version = "PDF built 2024-03-03"
+role = "Introductory Python textbook."
+license = "Creative Commons (non-commercial); confirm exact terms for the report"
+url = "https://www.brianheinold.net/python/"
+pages = 263
+sha256 = "14cae739c98f1819f2aed0ee8e4f4d82c04ef01ee2ddbd9ccda27cfbc2026c88"
+
+[[source]]
+id = "python-crash-course"
+file = "pythoncrashcourse.pdf"
+title = "Python Crash Course, 1st edition (Eric Matthes, No Starch Press, 2015)"
+subject = "python"
+version = "1st edition (2015)"
+role = "Introductory Python and object-oriented programming textbook; 2015 edition."
+license = "Copyrighted; used through the author's school license for coursework"
+url = "https://nostarch.com/pythoncrashcourse"
+pages = 562
+sha256 = "43a8339bdb697134cb78ec95163dd400307c1bb153b939d6794637ca5e669e64"
+
+[[source]]
+id = "dagstuhl-19281"
+file = "dagrep_v009_i007_p001_19281.pdf"
+title = "Notional Machines and Programming Language Semantics in Education (Dagstuhl Seminar 19281 report)"
+subject = "pedagogy"
+version = "Dagstuhl Reports 9(7), 2019; Aalto reprint (one added cover page)"
+role = "Expert seminar report on notional machines; describes teaching ideas, not language specifications."
+license = "CC BY 3.0"
+url = "https://acris.aalto.fi/ws/portalfiles/portal/39937983/dagrep_v009_i007_p001_19281.pdf"
+pages = 24
+sha256 = "30382d69e18701a3b3321f61493a3d681f538d20c98000260d214028ae49f111"
+
+[[source]]
+id = "guo-2013"
+file = "guo-2013-online-python-tutor.pdf"
+title = "Online Python Tutor: Embeddable Web-Based Program Visualization for CS Education (Philip J. Guo, SIGCSE 2013)"
+subject = "pedagogy"
+version = "SIGCSE 2013"
+role = "Paper reporting one tool's design and usage; not a controlled learning study."
+license = "ACM; downloaded from the ACM Digital Library"
+url = "https://doi.org/10.1145/2445196.2445368"
+pages = 6
+columns = 2   # two-column ACM layout: each column is extracted separately
+sha256 = "5340f944fcdc84805cb27140220e60c13c9862a85ee2858bbde51e39a043d531"

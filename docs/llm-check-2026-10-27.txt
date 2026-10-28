@@ -1,0 +1,11 @@
+Chat model Qwen3.8-27B at http://golem:4000/v1
+tool_choice=auto: FAILED after 5.3 s: OpenAIPermissionDeniedError: Error code: 403 - {'error': {'message': "The requested model 'Qwen3.8-27B' is not available for this API key, or the model name is invalid. Check the models available to you and try again.", 'type': 'team_model_access_denied', 'param': 'model', 'code': '403'}}
+tool_choice=required: FAILED after 0.0 s: OpenAIPermissionDeniedError: Error code: 403 - {'error': {'message': "The requested model 'Qwen3.8-27B' is not available for this API key, or the model name is invalid. Check the models available to you and try again.", 'type': 'team_model_access_denied', 'param': 'model', 'code': '403'}}
+Chat model Qwen3.8-27B at http://golem:4000/v1
+tool_choice=auto: FAILED after 5.4 s: OpenAIPermissionDeniedError: Error code: 403 - {'error': {'message': "The requested model 'Qwen3.8-27B' is not available for this API key, or the model name is invalid. Check the models available to you and try again.", 'type': 'team_model_access_denied', 'param': 'model', 'code': '403'}}
+tool_choice=required: FAILED after 0.0 s: OpenAIPermissionDeniedError: Error code: 403 - {'error': {'message': "The requested model 'Qwen3.8-27B' is not available for this API key, or the model name is invalid. Check the models available to you and try again.", 'type': 'team_model_access_denied', 'param': 'model', 'code': '403'}}
+Chat model Qwen3.8-Flash-Next at http://golem:4000/v1
+tool_choice=auto: exactly one well-formed call: yes (1 parsed, 0 invalid) in 6.2 s
+  search_documents {"query": "JALR jump and link register destination register pc + 4", "subject": "riscv"}
+tool_choice=required: exactly one well-formed call: yes (1 parsed, 0 invalid) in 0.9 s
+  search_documents {"query": "JALR jump and link register destination register pc + 4", "subject": "riscv"}

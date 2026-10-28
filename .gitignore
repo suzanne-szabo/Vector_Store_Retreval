@@ -1,0 +1,18 @@
+# Secrets and local configuration
+.env
+
+# Generated vector store and build record (a copy of the manifest for the
+# required runs is kept under runs/)
+chroma_db/
+/manifest.json
+
+# Source documents never go in Git; the test fixture is the one exception
+*.pdf
+!tests/fixtures/*.pdf
+
+# Python and tooling
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
