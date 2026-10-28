@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Python and RISC-V Retrieval Agent: U0-HW-09 Report (Suzanne Szabo)</title>
+<meta name="author" content="Suzanne Szabo">
+<meta name="description" content="Report for U0-HW-09: a bounded ReAct agent with a Chroma vector store over Python and RISC-V sources.">
+<style>
+  @page { size: Letter; margin: 0.85in 0.9in 0.85in 0.9in; }
+  html { font-size: 10.5pt; }
+  body { font-family: "DejaVu Serif", Georgia, serif; color: #111; line-height: 1.38; margin: 0; }
+  h1 { font-size: 18pt; margin: 0 0 4pt; line-height: 1.2; }
+  h2 { font-size: 13pt; margin: 16pt 0 5pt; border-bottom: 0.75pt solid #999; padding-bottom: 2pt; break-after: avoid; }
+  h3 { font-size: 11pt; margin: 11pt 0 3pt; break-after: avoid; }
+  p { margin: 0 0 6pt; }
+  ul, ol { margin: 0 0 6pt; padding-left: 18pt; }
+  li { margin-bottom: 2.5pt; }
+  .byline { margin: 0 0 10pt; color: #333; }
+  .byline p { margin: 0; }
+  code { font-family: "DejaVu Sans Mono", Menlo, monospace; font-size: 8.8pt; }
+  pre { font-family: "DejaVu Sans Mono", Menlo, monospace; font-size: 8.6pt; background: #f3f3f3; padding: 5pt 7pt; margin: 0 0 7pt; white-space: pre-wrap; break-inside: avoid; }
+  table { border-collapse: collapse; width: 100%; margin: 3pt 0 9pt; font-size: 9pt; break-inside: auto; }
+  caption { text-align: left; font-weight: bold; font-size: 9.5pt; padding-bottom: 3pt; caption-side: top; }
+  th, td { border: 0.5pt solid #888; padding: 2.5pt 4.5pt; vertical-align: top; text-align: left; }
+  thead th { background: #e6e6e6; }
+  tbody th { font-weight: normal; background: #f6f6f6; }
+  tr { break-inside: avoid; }
+  td.num, th.num { text-align: right; }
+  .miss { font-weight: bold; }
+  a { color: #0b4f9c; }
+  blockquote { margin: 0 0 7pt 12pt; padding-left: 8pt; border-left: 2pt solid #bbb; }
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>Python and RISC-V Retrieval Agent</h1>
+<div class="byline">
+<p>U0-HW-09: ReAct Agent with Vector Retrieval · Suzanne Szabo · Utah Tech University, AI, Fall 2026 · October 27, 2026</p>
+<p>Repository: <a href="https://github.com/suzanne-szabo/Vector_Store_Retreval">https://github.com/suzanne-szabo/Vector_Store_Retreval</a></p>
+</div>
+</header>
+
+<section>
+<h2>1. Task and Corpus</h2>
+<p>The agent answers questions from a fixed corpus of PDFs. It searches a persistent Chroma vector store, answers only from the passages it retrieved, cites each passage by chunk id, source and page, and reports “insufficient evidence” when the corpus does not support an answer. The application, not the model, validates every tool call and citation, counts steps, and decides how each run ends.</p>
+<p>I chose Python and RISC-V assembly instead of the supplied FDA food-safety corpus because I plan to build a personalized programming tutor for my senior research project. Building this assignment on that subject let me test the whole retrieval process (ingestion, hybrid search, a bounded ReAct agent and citation checks) on the kind of material the tutor will need, and see whether such an agent responds well when a student asks about a Python or assembly assignment. The instructor approved a different topic provided the nine required queries mirror the supplied pattern; each of my queries keeps the question type of its counterpart in the supplied set (Section 5).</p>
+<p>Like the supplied corpus, mine mixes authoritative, earlier-edition, tutorial and reference sources, so the agent has to use source roles and versions correctly. The corpus has nine PDFs, 2,017 pages and 5,655 chunks. The PDFs are not in the repository; <code>corpus/sources.toml</code> records each file’s download URL, license and SHA-256 hash, and ingestion refuses a file whose hash does not match.</p>
+<table>
+<caption>Table 1. Corpus sources and their roles</caption>
+<thead><tr><th scope="col">Source id</th><th scope="col">Document</th><th scope="col">Role given to the agent</th><th scope="col" class="num">Pages</th></tr></thead>
+<tbody>
+<tr><th scope="row"><code>riscv-isa-2025</code></th><td>RISC-V Unprivileged ISA manual, version 20250508</td><td>Authoritative; controls current instruction semantics</td><td class="num">727</td></tr>
+<tr><th scope="row"><code>riscv-isa-2019</code></th><td>RISC-V Unprivileged ISA, version 20191213</td><td>Earlier ratified edition; history or comparison only</td><td class="num">238</td></tr>
+<tr><th scope="row"><code>riscv-psabi</code></th><td>RISC-V ABIs Specification 1.0</td><td>Official calling convention and register roles</td><td class="num">56</td></tr>
+<tr><th scope="row"><code>winans-rvalp</code></th><td>Winans, <cite>RISC-V Assembly Language Programming</cite> (draft)</td><td>Beginner tutorial; does not override the specifications</td><td class="num">91</td></tr>
+<tr><th scope="row"><code>riscv-asm-manual</code></th><td>RISC-V Assembly Programmer’s Manual (draft)</td><td>Assembler and pseudoinstruction reference</td><td class="num">50</td></tr>
+<tr><th scope="row"><code>heinold-python</code></th><td>Heinold, <cite>A Practical Introduction to Python Programming</cite></td><td>Introductory Python textbook</td><td class="num">263</td></tr>
+<tr><th scope="row"><code>python-crash-course</code></th><td>Matthes, <cite>Python Crash Course</cite>, 1st ed. (2015)</td><td>Introductory Python and OOP textbook (used under my school’s license)</td><td class="num">562</td></tr>
+<tr><th scope="row"><code>dagstuhl-19281</code></th><td>Dagstuhl Seminar 19281 report on notional machines</td><td>Teaching ideas, not language specifications</td><td class="num">24</td></tr>
+<tr><th scope="row"><code>guo-2013</code></th><td>Guo, Online Python Tutor (SIGCSE 2013)</td><td>One tool’s design and usage; not a controlled study</td><td class="num">6</td></tr>
+</tbody>
+</table>
+<p>The two pedagogy papers were included to see whether teaching material could sit alongside the technical sources. They remain in the store, but the required queries focus on Python and assembly, the questions a student would bring to a tutor.</p>
+</section>
+
+<section>
+<h2>2. Design</h2>
+<p>I acted as orchestrator and architect: I chose the corpus, approved every design decision (D1–D25 in <code>specs/architecture.md</code>), ran the services and required runs, and checked the results. Following my HW-08 process, specifications came first, then black-box tests written from them, then code (Section 7 describes the AI assistance).</p>
+
+<h3>2.1 Vector store</h3>
+<ul>
+<li><strong>Extraction and cleaning:</strong> pdfplumber in layout mode (<code>x_tolerance=1</code>, with per-column extraction for the two-column Guo paper), Unicode NFKC normalization, removal of repeated running headers and footers, dot leaders and private-use glyphs, and vocabulary-aware rejoining of words hyphenated across lines.</li>
+<li><strong>Chunking:</strong> 1,000-character chunks with 150-character overlap. Chunks never cross pages, so every chunk has exactly one page.</li>
+<li><strong>Metadata:</strong> each chunk stores its source id, title, file name, subject, version, file SHA-256, one-based physical PDF page, character offset and a stable chunk id: the first 24 hex digits of SHA-256 over the source file hash, page, offset and text. Rebuilding with the same settings gives the same ids.</li>
+<li><strong>Embedding and store:</strong> Qwen3-Embedding-8B (4,096 dimensions) through the course gateway; one persistent Chroma collection with cosine distance. <code>uv run python -m rag_agent.ingest --rebuild</code> rebuilds it (about 22 minutes), and a manifest records the settings and an <code>index_version</code>. Ingestion refuses to mix different chunk or cleaning settings in one store.</li>
+<li><strong>Hybrid retrieval:</strong> vector search alone missed some passages that exact technical words find (for example, the limitations section of the Guo paper never reached its top 10). Each search therefore fuses a vector list and a BM25 keyword list (30 candidates each) with Reciprocal Rank Fusion (k = 60). Queries are embedded with the Qwen3 instruction “Given a question, retrieve passages that answer it.” On a 24-case retrieval probe, this combination put the answering passage first in 16 cases and in the top 5 in 21, with a worst rank of 8, better than vector, keyword or plain hybrid alone.</li>
+</ul>
+
+<h3>2.2 Tools</h3>
+<p>Both tools have typed Pydantic argument schemas; unknown fields, wrong types and out-of-range values are rejected before anything runs.</p>
+<ul>
+<li><code>search_documents(query, sources?, subject?, k?)</code> returns up to <code>k</code> ranked passages (default 5, maximum 8), each with its chunk id, source id, title, one-based page and text. Filters by source id or subject let the model target a specific document.</li>
+<li><code>finish(outcome, answer, citations)</code> ends the run with <code>answer</code> or <code>insufficient_evidence</code>. Each citation gives a marker number <code>n</code>, a chunk id and what it supports; the answer text uses <code>[n]</code> markers. Limits: 8,000 characters and 12 citations.</li>
+</ul>
+
+<h3>2.3 Controller and loop</h3>
+<p>The loop is a LangGraph graph (<code>START → llm → controller → tool → continue? → llm or END</code>). The chat model (Qwen3.8-Flash-Next) must make exactly one tool call per turn. The controller applies seven policies in order: a run already ended (P1), an unknown tool (P2), invalid arguments or an unknown source (P3), <code>finish</code> before any search (P4), a citation whose chunk was not retrieved in this run (P5), citation-marker rules (P6: every citation used once and every marker matched), and more than one call in a reply (P7). A rejection is returned to the model as an observation it can correct. Every run ends with exactly one terminal reason, checked in this order:</p>
+<ul>
+<li><code>ANSWER</code> or <code>INSUFFICIENT_EVIDENCE</code>: an accepted <code>finish</code>;</li>
+<li><code>ERROR</code>, with a kind: <code>MODEL_ERROR</code>, <code>RETRIEVAL_ERROR</code>, <code>NO_ACTION</code> (a reply with no tool call, after one reminder) or <code>REJECTION_LIMIT</code> (three consecutive rejections);</li>
+<li><code>STEP_LIMIT</code>: the configured number of model/tool steps (8) is used up.</li>
+</ul>
+<p>Each run writes a JSON Lines trace: a header with the question, configuration and manifest, one entry per step (the tool, its arguments, whether it was accepted, the policy and reason for a rejection, and the observation), and the final result with its terminal reason, answer and resolved citations.</p>
+
+<h3>2.4 Source attribution</h3>
+<p>Attribution is checked in two layers. <strong>Provenance</strong> is checked by code: a citation is valid only if its chunk id was returned by <code>search_documents</code> earlier in the same run (P5), and the final citations are resolved to source, title and page from those retrieval results, not from the model. <strong>Support</strong>, whether each claim follows from its cited passage, cannot be checked that way, so I evaluated it claim by claim (Section 5.3). The system prompt also gives the role of every source, tells the model to prefer the 2025 manual over the 2019 edition for current rules, and to quote exact values from passages.</p>
+</section>
+
+<section>
+<h2>3. Recorded Configuration</h2>
+<table>
+<caption>Table 2. Configuration used for every required run</caption>
+<thead><tr><th scope="col">Setting</th><th scope="col">Value</th></tr></thead>
+<tbody>
+<tr><th scope="row">Embedding model</th><td>Qwen3-Embedding-8B, 4,096 dimensions, cosine distance</td></tr>
+<tr><th scope="row">Chunk size and overlap</th><td>1,000 and 150 characters; chunks never cross pages</td></tr>
+<tr><th scope="row">Vector store</th><td>Chroma, 5,655 chunks, <code>index_version</code> 48c92aea33b03628</td></tr>
+<tr><th scope="row">Retrieval</th><td>Hybrid: vector + BM25, 30 candidates each, Reciprocal Rank Fusion (k = 60), with the query instruction above</td></tr>
+<tr><th scope="row">Retrieval result count (<code>k</code>)</th><td>5 per search by default (the model may request up to 8)</td></tr>
+<tr><th scope="row">Model/tool step limit</th><td>8</td></tr>
+<tr><th scope="row">Chat model</th><td>Qwen3.8-Flash-Next, temperature 0</td></tr>
+<tr><th scope="row">Other limits</th><td>3 consecutive rejections; answers up to 8,000 characters and 12 citations; one reminder before <code>NO_ACTION</code></td></tr>
+</tbody>
+</table>
+<p>The supplied service file names Qwen3.8-27B as the chat model, but the gateway returned HTTP 403 (<code>team_model_access_denied</code>) for my course key, so I compared the two chat models available to me on the same question. Gemma-4 could not follow the citation format; Qwen3.8-Flash-Next could, so I recorded it before any required run (D22).</p>
+</section>
+
+<section>
+<h2>4. Test Results</h2>
+<p><code>uv run pytest -q</code>: <strong>192 passed</strong> in about 7 seconds. The tests need no network or API key: a scripted fake chat model, a fake retriever and fake embeddings stand in for the course services, and a small generated PDF serves as the ingestion fixture.</p>
+<table>
+<caption>Table 3. Required test coverage</caption>
+<thead><tr><th scope="col">Requirement</th><th scope="col">Where it is tested (examples)</th></tr></thead>
+<tbody>
+<tr><th scope="row">Ingestion metadata: source, one-based physical page, stable chunk id</th><td><code>test_ingest.py</code>: <code>test_chunks_carry_metadata_and_one_based_physical_pages</code>, <code>test_chunk_ids_are_stable_across_builds</code></td></tr>
+<tr><th scope="row">Tool argument validation and source-labeled results</th><td><code>test_tools.py</code> (19 tests): bad types, unknown fields, unknown sources, <code>k</code> out of range; every result carries chunk id, source, title and page</td></tr>
+<tr><th scope="row">Rejection of a citation retrieval did not return</th><td><code>test_controller.py</code>, <code>test_agent_loop.py</code>: <code>test_an_unretrieved_citation_is_rejected_and_the_model_can_correct_it</code></td></tr>
+<tr><th scope="row">Step-limit enforcement</th><td><code>test_step_limit_is_enforced_exactly</code>, <code>test_step_limit_ends_a_run_that_never_finishes</code>, <code>test_recursion_backstop_never_preempts_the_step_limit</code></td></tr>
+<tr><th scope="row">All four terminal reasons</th><td><code>test_agent_loop.py</code> and <code>test_controller.py</code>: answer, insufficient evidence, each error kind, step limit, and their precedence</td></tr>
+<tr><th scope="row">A supported run and an insufficient-evidence run</th><td><code>test_supported_run_ends_with_an_answer_citing_retrieved_evidence</code>, <code>test_insufficient_evidence_run</code> (scripted model actions, substitute retrieval results)</td></tr>
+</tbody>
+</table>
+<p>Other test files cover PDF cleaning (17 tests), the corpus catalog, BM25 keyword search, rank fusion, the prompt, the command-line interface and the required-run script.</p>
+</section>
+
+<section>
+<h2>5. Required-Query Outcomes</h2>
+<h3>5.1 The nine queries</h3>
+<p>The queries (<code>queries/required-queries.md</code>, frozen before the first run, SHA-256 7678abca…1451) were each run exactly as written by <code>uv run python scripts/run_required.py</code>. Each mirrors the supplied query with the same number.</p>
+<table>
+<caption>Table 4. Required queries, the supplied pattern each mirrors, and results</caption>
+<thead><tr><th scope="col">Query</th><th scope="col">Mirrors supplied type</th><th scope="col">Expected</th><th scope="col">Run 1</th><th scope="col">Run 2 (final)</th><th scope="col" class="num">Steps</th></tr></thead>
+<tbody>
+<tr><th scope="row">Q1 JALR in the 2025 ISA manual</th><td>Section lookup</td><td>Answer</td><td>Answer</td><td>Answer</td><td class="num">2/8</td></tr>
+<tr><th scope="row">Q2 Indentation errors (<cite>Crash Course</cite>)</th><td>Procedure for a student scenario</td><td>Answer</td><td>Answer</td><td>Answer</td><td class="num">4/8</td></tr>
+<tr><th scope="row">Q3 <code>__init__()</code> and <code>self</code></th><td>Several facts from one reference entry</td><td>Answer</td><td class="miss">Error (no action)</td><td>Answer</td><td class="num">3/8</td></tr>
+<tr><th scope="row">Q4 Heinold’s operator table</th><td>Table comparison</td><td>Answer</td><td>Answer</td><td>Answer</td><td class="num">5/8</td></tr>
+<tr><th scope="row">Q5 Overflow checks: decision and cost</th><td>Findings with stated limits</td><td>Answer</td><td>Answer</td><td>Answer</td><td class="num">3/8</td></tr>
+<tr><th scope="row">Q6 <code>add(2, 3)</code> in Python and RISC-V</th><td>Cross-document scenario</td><td>Answer</td><td class="miss">Step limit</td><td class="miss">Step limit</td><td class="num">8/8</td></tr>
+<tr><th scope="row">Q7 2019 vs. 2025 specification</th><td>Source authority and version</td><td>Answer</td><td>Answer</td><td>Answer</td><td class="num">4/8</td></tr>
+<tr><th scope="row">Q8 CPython’s RISC-V code and cycle count</th><td>Plausible but unsupported</td><td>Insufficient</td><td>Insufficient</td><td>Insufficient</td><td class="num">7/8</td></tr>
+<tr><th scope="row">Q9 Greatest NFL quarterback</th><td>Off-topic boundary</td><td>Insufficient</td><td>Insufficient</td><td>Insufficient</td><td class="num">4/8</td></tr>
+</tbody>
+</table>
+<p><strong>Final result: 8 of 9 as expected (run 2, <code>runs/2026-10-27_2054/</code>). Q6 did not end with the expected supported answer; it ended at the step limit.</strong> Q1–Q5 and Q7 ended with cited answers; Q8 and Q9 ended with insufficient evidence, citing the nearest passages and naming what was missing. Every trace, a copy of the manifest and a summary are in the run folder.</p>
+
+<h3>5.2 What went wrong, and what I changed</h3>
+<p>Run 1 (<code>runs/2026-10-27_1914/</code>) met 7 of 9. In both misses, retrieval had found the right passages; the failure was in producing the final answer:</p>
+<ul>
+<li><strong>Q3, <code>ERROR/NO_ACTION</code>:</strong> the model wrote a complete cited answer as plain text instead of calling <code>finish</code>, and the controller ended the run at once.</li>
+<li><strong>Q6, <code>STEP_LIMIT</code>:</strong> its answers were 5,865 and then 4,308 characters, over the 4,000-character limit, and the rejection did not say by how much.</li>
+</ul>
+<p>Both came from limits I had set without evidence, so I changed them for all queries rather than for these two: the answer limit became 8,000 characters and the rejection now states the length (D23); a reply without a tool call gets one reminder before <code>NO_ACTION</code> (D24); and the prompt states the citation limit (D25). Specifications and failing tests were updated before the code. I then reran all nine with one configuration. Q3 passed. Q6 failed again, differently: six of its eight steps went to searching; the first <code>finish</code> added a field the citation schema does not allow, and the second listed 13 citations, one over the limit.</p>
+<p>I stopped after run 2. A third round aimed only at Q6 would have tuned the system to one query. The failure was also safe: the controller accepted no malformed answer, so the run ended with no answer rather than an unchecked one. In an uncounted check run made between runs 1 and 2 (<code>runs/not-required/check-fixes/</code>), Q6 did end with an accepted answer on its last step, citing all three required sources. The question is answerable, but not reliably within 8 steps.</p>
+
+<h3>5.3 Claim-by-claim evaluation</h3>
+<p>Claude drafted a verdict for every claim in the run-2 answers by setting the claim next to the full text of its cited passage; I checked each verdict (<code>docs/claim-evaluation.md</code>).</p>
+<table>
+<caption>Table 5. Support for the 91 claims in the eight run-2 results that ended with an answer or a refusal</caption>
+<thead><tr><th scope="col">Verdict</th><th scope="col" class="num">Claims</th><th scope="col" class="num">Share</th></tr></thead>
+<tbody>
+<tr><th scope="row">Supported by the cited passage</th><td class="num">78</td><td class="num">86%</td></tr>
+<tr><th scope="row">Partly supported (adds an inference)</th><td class="num">7</td><td class="num">8%</td></tr>
+<tr><th scope="row">Not supported</th><td class="num">2</td><td class="num">2%</td></tr>
+<tr><th scope="row">Uncited</th><td class="num">4</td><td class="num">4%</td></tr>
+</tbody>
+</table>
+<p>No claim contradicts its passage. The weaknesses share one pattern: the model quotes a passage accurately, then adds something the passage does not say, such as a section title (Q4), a generalization from vector instructions to all integer operations (Q5), or a garbled sentence (Q3). Three of the four uncited claims restate the source roles from the system prompt. The one accepted Q6 answer from the check run was weaker: 14 of its 23 claims are supported. Among the rest, it presents a shadow-stack security example as the ordinary way to save the return address, and one of its claims lost its citation when the model cut 19 citations to 12 to meet the limit.</p>
+</section>
+
+<section>
+<h2>6. Observed Limitations</h2>
+<ul>
+<li><strong>Provenance is not support.</strong> The citation check proves a passage was retrieved, not that it says what the claim says. The unsupported additions in Section 5.3 passed every automated check and were found only by reading the passages.</li>
+<li><strong>Cross-document questions need more steps.</strong> A question spanning three sources spent about six of eight steps searching, leaving two attempts to produce a valid <code>finish</code>. Future work: accept and ignore harmless extra citation fields, warn the model when two steps remain, and give multi-source questions a larger step budget.</li>
+<li><strong>Behavior varies between runs.</strong> Even at temperature 0, the same Q6 question failed three different ways across three runs, so one run per query is a small sample.</li>
+<li><strong>Limits can trade away support.</strong> Enforcing the 12-citation limit made the model drop a citation while keeping the claim it supported.</li>
+<li><strong>Extraction is imperfect.</strong> Some words broken across lines are not rejoined, a few page layouts jumble example output, and the Winans draft’s margin line numbers remain in its chunks.</li>
+<li><strong>Retrieval needed both methods.</strong> Vector search alone missed exact technical passages, and keyword search alone missed questions phrased differently from the text. A question asked word for word still ranked its passage only 7th.</li>
+<li><strong>Model constraints.</strong> The assigned chat model was unavailable to my key, so the results come from Qwen3.8-Flash-Next.</li>
+</ul>
+
+<h3>What this means for the tutor</h3>
+<p>The agent handled single-source questions a student might ask, such as what an instruction does, why an indentation error happens or what an operator computes, and it refused honestly when the corpus could not answer. The specifications answer “what is the rule” well but are not tutorials, so a tutor would need more worked examples. Questions that join Python and assembly were the hardest, and those are the ones my tutor most needs. A tutor would also need a support check, not just a provenance check, before showing an answer to a student.</p>
+</section>
+
+<section>
+<h2>7. AI-Assistance Disclosure</h2>
+<ul>
+<li><strong>Claude (Anthropic, Claude app; model <code>claude-opus-5-5</code>), main working session.</strong> Material effect: explained the retrieval and ReAct concepts; proposed design options for each decision; wrote the specifications, the ingestion and retrieval code (extraction, cleaning, chunking, store, BM25, rank fusion), the black-box tests, the retrieval probe, the later fixes D23–D25, the README and process log; drafted the claim-by-claim verdicts; and drafted this report. Verification: I made and recorded every design decision (D1–D25); ran ingestion, the retrieval probe and both required runs myself on my own machine against the course services; inspected search results from the command line; confirmed that the full test suite passes (192 tests); checked each claim verdict against the cited passage text in the traces; and checked this report against the traces and run summaries.</li>
+<li><strong>Claude coding agent (a separate, fresh Claude session).</strong> Material effect: implemented the agent modules (tools, controller, session, prompts, LangGraph loop, command-line interface and required-run script) from the specifications and tests alone, without seeing the main session’s reasoning. Verification: the code had to pass tests written before it existed; its work was reviewed against the specifications (one defect, in a test’s table-row filter, was found and fixed); and I exercised it by asking questions through the command-line interface and by the required runs.</li>
+</ul>
+</section>
+</main>
+</body>
+</html>

@@ -297,3 +297,32 @@ A running record of decisions, findings from tests, and changes to the plan.
   sources.
 - D25 (orchestrator): the system prompt also states the citation limit ("Cite at most 12 passages"), so
   it states every `finish` limit up front. Spec, then failing test, then code; full suite passing.
+
+## 2026-10-27: Required run 2 (`runs/2026-10-27_2054/`): 8 of 9 as expected; final
+
+| Query | Expected | Run 1 | Run 2 (final) | Run 2 steps |
+|---|---|---|---|---|
+| Q1 | ANSWER | ANSWER | ANSWER | 2/8 |
+| Q2 | ANSWER | ANSWER | ANSWER | 4/8 |
+| Q3 | ANSWER | ERROR/NO_ACTION | **ANSWER** | 3/8 |
+| Q4 | ANSWER | ANSWER | ANSWER | 5/8 |
+| Q5 | ANSWER | ANSWER | ANSWER | 3/8 |
+| Q6 | ANSWER | STEP_LIMIT | **STEP_LIMIT** | 8/8 |
+| Q7 | ANSWER | ANSWER | ANSWER | 4/8 |
+| Q8 | INSUFFICIENT_EVIDENCE | INSUFFICIENT_EVIDENCE | INSUFFICIENT_EVIDENCE | 7/8 |
+| Q9 | INSUFFICIENT_EVIDENCE | INSUFFICIENT_EVIDENCE | INSUFFICIENT_EVIDENCE | 4/8 |
+
+- **Q6 run-2 diagnosis:** retrieval succeeded again (psABI p. 9, Winans pp. 43-66, *Python Crash Course*
+  pp. 168-175, all with source filters). Step 1 asked for two searches at once (P7), so one search was
+  repeated on step 2. Six steps went to searching. Step 7's `finish` (5,167 characters, within the new
+  limit) added an extra `source_id` field to every citation (forbidden by the schema; P3). Step 8 removed
+  it but listed 13 citations, one over the limit the prompt states (P3). Step limit reached.
+- Each fix worked for its own failure (Q3 fixed; Q6's answer length fixed), but a cross-document
+  question spends about six of eight steps searching, leaving two attempts at a valid `finish`, and the
+  model made one formatting slip per attempt.
+- Orchestrator decision: **stop; run 2 is final.** A third round aimed at Q6 alone would amount to tuning
+  the system to one query. Both failures were safe: the controller accepted no malformed or oversized
+  answer, so the run ended with no answer rather than an unchecked one.
+- Improvements recorded as future work: accept and ignore harmless extra fields in a citation; warn the
+  model when two steps remain; give cross-document questions a larger step budget, or reserve steps for
+  `finish`.

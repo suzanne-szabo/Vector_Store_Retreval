@@ -1,6 +1,5 @@
 # Secrets and local configuration
 .env
-.env.example
 
 # Generated vector store and build record (a copy of the manifest for the
 # required runs is kept under runs/)

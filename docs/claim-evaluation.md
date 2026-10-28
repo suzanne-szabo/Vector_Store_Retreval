@@ -40,7 +40,7 @@ because the cited chunk did come from retrieval; only reading the passage does.
 
 ## Q1: ISA Instruction Lookup (ANSWER, 2 steps)
 
-- [ ] Verified by the author
+- [x] Verified by the author
 
 | # | Claim | Cited | Verdict | Note |
 |---|---|---|---|---|
@@ -56,7 +56,7 @@ because the cited chunk did come from retrieval; only reading the passage does.
 
 ## Q2: Python Indentation Errors (ANSWER, 4 steps)
 
-- [ ] Verified by the author
+- [x] Verified by the author
 
 | # | Claim | Cited | Verdict | Note |
 |---|---|---|---|---|
@@ -78,7 +78,7 @@ because the cited chunk did come from retrieval; only reading the passage does.
 
 ## Q3: Python Class Initialization (ANSWER, 3 steps)
 
-- [ ] Verified by the author
+- [x] Verified by the author
 
 | # | Claim | Cited | Verdict | Note |
 |---|---|---|---|---|
@@ -99,7 +99,7 @@ because the cited chunk did come from retrieval; only reading the passage does.
 
 ## Q4: Python Operator Table (ANSWER, 5 steps)
 
-- [ ] Verified by the author
+- [x] Verified by the author
 
 | # | Claim | Cited | Verdict | Note |
 |---|---|---|---|---|
@@ -122,7 +122,7 @@ because the cited chunk did come from retrieval; only reading the passage does.
 
 ## Q5: ISA Design Decision and Its Cost (ANSWER, 3 steps)
 
-- [ ] Verified by the author
+- [x] Verified by the author
 
 | # | Claim | Cited | Verdict | Note |
 |---|---|---|---|---|
@@ -138,7 +138,7 @@ because the cited chunk did come from retrieval; only reading the passage does.
 
 ## Q6: Cross-Document Function Call (STEP_LIMIT, 8 steps)
 
-- [ ] Verified by the author
+- [x] Verified by the author
 
 No answer was accepted in run 2, so it has no claims to evaluate. Retrieval found the evidence the
 question needs (psABI p. 9, Winans pp. 43-66, *Python Crash Course* pp. 168-175). Both `finish` attempts
@@ -187,7 +187,7 @@ uses all three required sources and keeps the two models separate, as the questi
 
 ## Q7: Source Authority and Version (ANSWER, 4 steps)
 
-- [ ] Verified by the author
+- [x] Verified by the author
 
 | # | Claim | Cited | Verdict | Note |
 |---|---|---|---|---|
@@ -208,7 +208,7 @@ uses all three required sources and keeps the two models separate, as the questi
 
 ## Q8: Insufficient Evidence, Plausible Question (INSUFFICIENT_EVIDENCE, 7 steps)
 
-- [ ] Verified by the author
+- [x] Verified by the author
 
 Outcome correct. Six searches covered CPython internals, bytecode, generated code and cycle measurement.
 
@@ -227,7 +227,7 @@ Outcome correct. Six searches covered CPython internals, bytecode, generated cod
 
 ## Q9: Off-Topic Evidence Boundary (INSUFFICIENT_EVIDENCE, 4 steps)
 
-- [ ] Verified by the author
+- [x] Verified by the author
 
 Outcome correct.
 
